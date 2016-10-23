@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/saProject"></property>
+	</bean>
+
+<!-- 	<bean id="dataSource" -->
+<!-- 		class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+<!-- 		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"></property> -->
+<!-- 		<property name="url" -->
+<!-- 			value="jdbc:sqlserver://localhost:1433;database=projectDemo"></property> -->
+<!-- 		<property name="username" value="sa"></property> -->
+<!-- 		<property name="password" value="passw0rd"></property> -->
+<!-- 	</bean> -->
+
+	<bean id="sessionFactory" destroy-method="destroy"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:hibernate.cfg.xml">
+		</property>
+	</bean>
+
+
+	<bean id="groupInfoDAOHibernate" class="model.dao.GroupInfoDAOHibernate">
+		<constructor-arg ref="sessionFactory"></constructor-arg>
+	</bean>
+
+	<bean id="groupInfoService" class="model.GroupInfoService">
+		<constructor-arg ref="groupInfoDAOHibernate"></constructor-arg>
+	</bean>
+
+
+
+
+	<bean id="stockInfoDAOHibernate" class="model.dao.StockInfoDAOHibernate">
+		<constructor-arg ref="sessionFactory"></constructor-arg>
+	</bean>
+
+	<bean id="stockInfoService" class="model.StockInfoService">
+		<constructor-arg ref="stockInfoDAOHibernate"></constructor-arg>
+	</bean>
+
+	<bean id="instantlyInfoDAOHibernate" class="model.dao.InstantlyInfoDAOHibernate">
+		<constructor-arg ref="sessionFactory"></constructor-arg>
+	</bean>
+	<bean id="instantlyInfoService" class="model.InstantlyInfoService">
+		<constructor-arg ref="instantlyInfoDAOHibernate"></constructor-arg>
+	</bean>
+	
+	
+
+	<bean id="dataAnalysisDAOHibernate" class="model.dao.DataAnalysisDAOHibernate">
+		<constructor-arg ref="sessionFactory"></constructor-arg>
+	</bean>
+
+	<bean id="dataAnalysisService" class="model.DataAnalysisService">
+		<constructor-arg ref="dataAnalysisDAOHibernate"></constructor-arg>
+	</bean>
+
+
+</beans>
