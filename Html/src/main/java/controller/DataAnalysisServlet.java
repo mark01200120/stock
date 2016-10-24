@@ -27,6 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import model.DataAnalysisBean;
 import model.DataAnalysisDAO;
 import model.DataAnalysisService;
+import model.GroupInfoService;
 import model.dao.DataAnalysisDAOHibernate;
 
 /**
@@ -36,11 +37,13 @@ import model.dao.DataAnalysisDAOHibernate;
 public class DataAnalysisServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DataAnalysisService dataAnalysisService;
+	private	GroupInfoService groupInfoService;
 	//springinit直接拿取
 	@Override
 	public void init() throws ServletException {
 		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 		dataAnalysisService = (DataAnalysisService) context.getBean("dataAnalysisService");
+		groupInfoService = (GroupInfoService)context.getBean("groupInfoService");
 	}
 	//判斷日期格式
 	private SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -51,6 +54,7 @@ public class DataAnalysisServlet extends HttpServlet {
 			throws ServletException, IOException {
 		//接收請求,內容標題設為UTF8
 		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		// 接收資料,發出請求時尋找name名稱存入string
 		 
 		String temp1 = request.getParameter("selectstockid");
@@ -114,7 +118,7 @@ public class DataAnalysisServlet extends HttpServlet {
 			result = dataAnalysisService.selectByFilter(stockId, stratDate, endDate);
 			request.setAttribute("select", result);
 		}
-		
+		request.setAttribute("groups", groupInfoService.select(null));
 		// 跳轉到資料 dataAnalysis.jsp
 		 
 		request.getRequestDispatcher("/info1.jsp").forward(request, response);

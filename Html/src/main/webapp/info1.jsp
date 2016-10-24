@@ -12,6 +12,7 @@
 	rel='stylesheet' type='text/css'>
 <!--[if lte IE 8]><script src="js/html5shiv.js"></script><![endif]-->
  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script id="dsq-count-scr" src="//markchen-2.disqus.com/count.js" async></script>	
 <link rel="stylesheet" href="bootstrap/css/bootstrap.css" />
 <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.css" />
@@ -56,7 +57,7 @@ ul#comments li a { font-size:1em;text-decoration: none; color: #a8a744; }
 </noscript>
 <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
 <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
 </head>
 <body class="homepage">
 
@@ -104,7 +105,7 @@ ul#comments li a { font-size:1em;text-decoration: none; color: #a8a744; }
 			</div>
 			<!-- Nav -->
 		</div>
-		
+	
 		<!-- 標題 -->
 
 		<!-- 圖片 -->
@@ -121,11 +122,10 @@ ul#comments li a { font-size:1em;text-decoration: none; color: #a8a744; }
 					<!-- 					指定位置 -->
 					<form action="<c:url value="/dataAnalysis.controller" />" method="post" class="form-inline">
 						<div class="form-group">
-							<label class="control-label">股票產業：</label>
-							<select name="selectstockcompany" ></select>
+							<label class="control-label">股票產業：</label>					
+							<select name="selectstockcompany"></select>
 							<label class="control-label">股票代碼：</label>
-							<select name="selectstockid" ></select>
-							<span>${error.stockId}</span>
+							<select name="selectstockid"></select>
 						</div>
 						<div class="form-group">
 						<label class="control-label" >日期區間：</label><input type="text" name="startDate" value="${param.startDate}" placeholder="起始日期">
@@ -178,9 +178,9 @@ ul#comments li a { font-size:1em;text-decoration: none; color: #a8a744; }
 						</c:if>
 						</tbody>
 					</table>
+			 </div>
+		</div>
 			</div>
-		</div>
-		</div>
  </article>
  <div id="disqus_thread"></div>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -201,17 +201,17 @@ $(document).ready(function() {
 		"method": "GET",
 		"contentType": "application/x-www-form-urlencoded; charset=UTF-8",
 		"dataType": "json",
-		"url": contextPath+"/gropuId.view",
+		"data": "action=groupname",
+		"url": contextPath+"/groupInfo.view",
 		"cache": false,
 	    "success": function (msg) {
-		console.log(msg[0])
 	     //放入一筆空白的清單
-	     $('select[name="selectstockid"]').append($("<option></option>").attr("value", "").text("請選擇"));
+		  $('select[name="selectstockcompany"]').append($("<option></option>").attr("value", "").text("請先選擇產業類別"));
 	   
 	     for (var i = 0; i < msg.length; i++) {
-		 // console.log(msg[0].stockId);   
+// 		 console.log(msg[0].msg[i].industryCategory);   
 	     //將取得的Json一筆一筆放入清單
-	     $('select[name="selectstockid"]').append($("<option></option>").attr("value",msg[i].stockId).text(msg[i].stockId));
+	     $('select[name="selectstockcompany"]').append($("<option></option>").attr("value",msg[i].industryCategory).text(msg[i].industryCategory));
 	     }
 	   },
 	   error: function (xhr, ajaxOptions, thrownError) {
@@ -219,9 +219,42 @@ $(document).ready(function() {
 	   }
 	});
 	
-	
-	
+	$('select[name="selectstockcompany"]').change(function() {
+		clearForm();
+		$.ajax({
+			"method": "GET",
+			"contentType": "application/x-www-form-urlencoded; charset=UTF-8",
+			"dataType": "json",
+			"url": contextPath+"/groupInfo.view",
+			"data": "action=stockids",
+			"cache": false,
+		    "success": function (msg) {
+		     //放入一筆空白的清單
+			var s = $('select[name="selectstockcompany"]').val();
+ 				
+		    $.each(msg,function(key,value)
+		    {
+		    	$.each(value,function(key2,value2)
+		    	{	
+		    		if(key2==s){
+		    			console.log(value2);
+		    		$('select[name="selectstockid"]').append($("<option></option>").attr("value",value2).text(value2));
+		    		}
+		    	});
+	     //將取得的Json一筆一筆放入清單 		    		
+		    });
+		    },
+		   error: function (xhr, ajaxOptions, thrownError) {
+		     alert(xhr.status);
+		   }
+		});
+	});
 });
+
+function clearForm() {
+	$('select[name="selectstockid"]').val("");
+	$('select[name="selectstockid"]').first().empty();
+}
 
 </script>
 <script>
